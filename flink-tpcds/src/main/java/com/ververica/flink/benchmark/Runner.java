@@ -39,13 +39,15 @@ class Runner {
 	private final String sqlQuery;
 	private final int numIters;
 	private final TableEnvironment tEnv;
+	private final boolean printJobGraph;
 
-	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv) {
+	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv, boolean printJobGraph) {
 		this.name = name;
 		this.sqlQuery = sqlQuery;
 		this.numIters = numIters;
 		Preconditions.checkArgument(numIters > 0);
 		this.tEnv = tEnv;
+		this.printJobGraph = printJobGraph;
 	}
 
 	void run(List<Tuple2<String, Long>> bestArray) {
@@ -75,7 +77,12 @@ class Runner {
 
 		LOG.info(" begin execute.");
 
-		List<Row> res = CollectionUtil.iteratorToList(table.execute().collect());
+		List<Row> res = null;
+		if (printJobGraph) {
+			table.execute();
+		} else {
+			res = CollectionUtil.iteratorToList(table.execute().collect());
+		}
 
 		LOG.info(" end execute");
 
@@ -84,7 +91,9 @@ class Runner {
 		long totalTime = System.currentTimeMillis() - startTime;
 		System.out.println("total execute " + totalTime + "ms.");
 
-		printRow(res);
+		if (!printJobGraph) {
+			printRow(res);
+		}
 
 		return new Result(totalTime);
 	}

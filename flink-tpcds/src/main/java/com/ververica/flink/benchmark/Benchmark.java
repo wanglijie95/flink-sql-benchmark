@@ -58,8 +58,8 @@ public class Benchmark {
 	private static final Option PARALLELISM = new Option("p", "parallelism", true,
 			"The parallelism, default is 800.");
 
-    private static final Option MODE =
-            new Option("m", "mode", true, "mode: 'execute' or 'explain'");
+	private static final Option MODE =
+			new Option("m", "mode", true, "mode: 'execute' or 'explain' or 'print-job-graph'");
 
 	public static void main(String[] args) throws ParseException {
 		Options options = getOptions();
@@ -78,24 +78,19 @@ public class Benchmark {
                         line.getOptionValue(LOCATION.getOpt()),
                         line.getOptionValue(QUERIES.getOpt()));
 
-		switch (mode) {
-			case "explain":
-				explain(tEnv, queries);
-				break;
-			case "execute":
-				run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")));
-				break;
-			default:
-				throw new RuntimeException(String.format("Mode '%s' doesn't support now, please changing value of --mode to execute or explain.", mode));
+		if ("explain".equals(mode)) {
+			explain(tEnv, queries);
+		} else {
+			run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")), mode.equals("print-job-graph"));
 		}
 	}
 
-	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations) {
+	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations, boolean printJobGraph) {
 		List<Tuple2<String, Long>> bestArray = new ArrayList<>();
 		queries.forEach((name, sql) -> {
 			tEnv.getConfig().getConfiguration().set(PipelineOptions.NAME, name);
 			System.out.println("Start run query: " + name);
-			Runner runner = new Runner(name, sql, iterations, tEnv);
+			Runner runner = new Runner(name, sql, iterations, tEnv, printJobGraph);
 			runner.run(bestArray);
 		});
 		printSummary(bestArray);
