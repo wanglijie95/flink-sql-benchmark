@@ -101,7 +101,13 @@ public class Benchmark {
         queries.forEach(
                 (name, sql) -> {
                     System.out.println("Start explain query: " + name);
-                    System.out.println(tEnv.explainSql(sql, ExplainDetail.ESTIMATED_COST));
+					String plan = tEnv.explainSql(sql, ExplainDetail.ESTIMATED_COST);
+					if (plan.contains("RuntimeFilter")) {
+						System.out.println("Query " + name + " contains RuntimeFilter: Y");
+					} else {
+						System.out.println("Query " + name + " contains RuntimeFilter: N");
+					}
+                    System.out.println(plan);
                 });
         printSummary(bestArray);
     }
