@@ -18,6 +18,6 @@ select  i_item_id,
  group by rollup (i_item_id, s_state)
  order by i_item_id
          ,s_state
- limit 100
+
 
 -- end query 1 in stream 0 using template query27.tpl

@@ -15,6 +15,6 @@ select  ca_zip
  	and d_qoy = 2 and d_year = 2000
  group by ca_zip
  order by ca_zip
- limit 100
+
 
 -- end query 1 in stream 0 using template query15.tpl

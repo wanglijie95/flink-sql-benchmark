@@ -23,6 +23,6 @@ and cs_ext_discount_amt
                              (cast('1998-03-18' as date) + interval '90' day)
           and d_date_sk = cs_sold_date_sk 
       ) 
-limit 100
+
 
 -- end query 1 in stream 0 using template query32.tpl

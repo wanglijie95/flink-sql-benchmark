@@ -17,6 +17,6 @@ select  dt.d_year
  order by dt.d_year
  	,ext_price desc
  	,brand_id
-limit 100 
+
 
 -- end query 1 in stream 0 using template query52.tpl

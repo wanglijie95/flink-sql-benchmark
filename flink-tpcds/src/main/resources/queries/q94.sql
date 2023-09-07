@@ -24,6 +24,6 @@ and not exists(select *
                from web_returns wr1
                where ws1.ws_order_number = wr1.wr_order_number)
 order by count(distinct ws_order_number)
-limit 100
+
 
 -- end query 1 in stream 0 using template query94.tpl

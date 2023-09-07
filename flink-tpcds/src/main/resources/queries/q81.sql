@@ -26,6 +26,6 @@ with customer_total_return as
  order by c_customer_id,c_salutation,c_first_name,c_last_name,ca_street_number,ca_street_name
                    ,ca_street_type,ca_suite_number,ca_city,ca_county,ca_state,ca_zip,ca_country,ca_gmt_offset
                   ,ca_location_type,ctr_total_return
- limit 100
+
 
 -- end query 1 in stream 0 using template query81.tpl

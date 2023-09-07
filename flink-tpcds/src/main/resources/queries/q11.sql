@@ -70,6 +70,6 @@ with year_total as (
          and case when t_w_firstyear.year_total > 0 then t_w_secyear.year_total / t_w_firstyear.year_total else null end
              > case when t_s_firstyear.year_total > 0 then t_s_secyear.year_total / t_s_firstyear.year_total else null end
  order by t_s_secyear.c_preferred_cust_flag
-limit 100
+
 
 -- end query 1 in stream 0 using template query11.tpl

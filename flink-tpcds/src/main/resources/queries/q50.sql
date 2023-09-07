@@ -54,6 +54,6 @@ order by s_store_name
         ,s_county
         ,s_state
         ,s_zip
-limit 100
+
 
 -- end query 1 in stream 0 using template query50.tpl
