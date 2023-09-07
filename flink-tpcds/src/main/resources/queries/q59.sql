@@ -39,6 +39,6 @@ with wss as
  where s_store_id1=s_store_id2
    and d_week_seq1=d_week_seq2-52
  order by s_store_name1,s_store_id1,d_week_seq1
-limit 100
+
 
 -- end query 1 in stream 0 using template query59.tpl
