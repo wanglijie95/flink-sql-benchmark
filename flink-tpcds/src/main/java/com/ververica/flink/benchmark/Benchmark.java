@@ -23,28 +23,17 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.configuration.GlobalConfiguration;
 import org.apache.flink.configuration.PipelineOptions;
-import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.ExplainDetail;
 import org.apache.flink.table.api.TableEnvironment;
-import org.apache.flink.table.catalog.hive.HiveCatalog;
-import org.apache.hive.common.util.HiveVersionInfo;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.ververica.flink.benchmark.QueryUtil.getQueries;
-import static java.util.Objects.requireNonNull;
 
 public class Benchmark {
-
-	private static final Option HIVE_CONF = new Option("c", "hive_conf", true,
-			"conf of hive.");
-
-	private static final Option DATABASE = new Option("d", "database", true,
-			"database of hive.");
 
 	private static final Option LOCATION = new Option("l", "location", true,
 			"sql query path.");
@@ -61,18 +50,13 @@ public class Benchmark {
 	private static final Option MODE =
 			new Option("m", "mode", true, "mode: 'execute' or 'explain' or 'print-job-graph'");
 
-	public static void main(String[] args) throws ParseException {
+	private Benchmark() {}
+
+	public static void runQueries(TableEnvironment tEnv, String[] args) throws ParseException {
 		Options options = getOptions();
 		DefaultParser parser = new DefaultParser();
 		CommandLine line = parser.parse(options, args, true);
-        System.out.println("args: " + String.join(" ", args));
-
         String mode = line.getOptionValue(MODE.getOpt(), "execute");
-        TableEnvironment tEnv =
-                setUpEnv(
-                        requireNonNull(line.getOptionValue(HIVE_CONF.getOpt())),
-                        requireNonNull(line.getOptionValue(DATABASE.getOpt())),
-                        Integer.parseInt(line.getOptionValue(PARALLELISM.getOpt(), "800")));
         LinkedHashMap<String, String> queries =
                 getQueries(
                         line.getOptionValue(LOCATION.getOpt()),
@@ -157,22 +141,8 @@ public class Benchmark {
 		System.err.println(builder.toString());
 	}
 
-	private static TableEnvironment setUpEnv(String hiveConf, String database, int parallelism) {
-		EnvironmentSettings settings = EnvironmentSettings.newInstance().inBatchMode().build();
-		TableEnvironment tEnv = TableEnvironment.create(settings);
-
-		tEnv.getConfig().addConfiguration(GlobalConfiguration.loadConfiguration());
-
-		HiveCatalog catalog = new HiveCatalog("hive", database, hiveConf, HiveVersionInfo.getVersion());
-		tEnv.registerCatalog("hive", catalog);
-		tEnv.useCatalog("hive");
-		return tEnv;
-	}
-
 	private static Options getOptions() {
 		Options options = new Options();
-		options.addOption(HIVE_CONF);
-		options.addOption(DATABASE);
 		options.addOption(LOCATION);
 		options.addOption(QUERIES);
 		options.addOption(ITERATIONS);
