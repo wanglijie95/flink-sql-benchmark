@@ -40,6 +40,9 @@ class QueryUtil {
 		List<String> queryList = queries == null ? null : Arrays.asList(queries.split(","));
 		if (location == null) {
 			for (int i = 1; i < 100; i++) {
+				if (i == 47) {
+					continue;
+				}
 				String name = "q" + i + ".sql";
 				ClassLoader cl = Benchmark.class.getClassLoader();
 				String path = "queries/" + name;
