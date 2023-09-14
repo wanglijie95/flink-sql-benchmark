@@ -76,7 +76,7 @@ public class Benchmark {
                         line.getOptionValue(QUERIES.getOpt()));
 
 		if (externalDatabase != null) {
-			tEnv.executeSql("CREATE DATABASE " + externalDatabase);
+			tEnv.executeSql("CREATE DATABASE IF NOT EXISTS " + externalDatabase);
 		}
 		System.out.println("After create database " + externalDatabase);
 

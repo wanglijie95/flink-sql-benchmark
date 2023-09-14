@@ -21,6 +21,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.hadoop.util.StringUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -49,6 +50,7 @@ public class QueryUtilTest {
 	@Test
 	public void testInternalAll() {
 		LinkedHashMap<String, String> queries = getQueries(null, null);
+		System.out.println(StringUtils.join(",", queries.keySet()));
 		assertQueries(queries, 102);
 	}
 
