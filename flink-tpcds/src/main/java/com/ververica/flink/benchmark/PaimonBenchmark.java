@@ -73,12 +73,13 @@ public class PaimonBenchmark {
                         requireNonNull(line.getOptionValue(PAIMON_WAREHOUSE.getOpt())),
                         requireNonNull(line.getOptionValue(PAIMON_DATABASE.getOpt())),
                         line.getOptionValue(PAIMON_SCAN_PARALLELISM.getOpt()));
-        Benchmark.runQueries(tEnv, line);
+        Benchmark.runQueries(tEnv, line, "query_result");
     }
 
     private static TableEnvironment setUpEnv(
             String paimonWarehouse, String paimonDatabase, String paimonScanParallelism)
             throws TableNotExistException {
+        System.out.println("paimonScanParallelism is " + paimonScanParallelism);
         EnvironmentSettings settings = EnvironmentSettings.newInstance().inBatchMode().build();
         TableEnvironment tEnv = TableEnvironment.create(settings);
 

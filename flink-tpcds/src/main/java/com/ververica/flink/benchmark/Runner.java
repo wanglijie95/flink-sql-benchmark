@@ -19,8 +19,9 @@ package com.ververica.flink.benchmark;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.table.api.*;
+import org.apache.flink.table.api.internal.TableEnvironmentInternal;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.CollectionUtil;
 import org.apache.flink.util.Preconditions;
@@ -28,7 +29,9 @@ import org.apache.flink.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 class Runner {
@@ -40,14 +43,16 @@ class Runner {
 	private final int numIters;
 	private final TableEnvironment tEnv;
 	private final boolean printJobGraph;
+	private final String externalDatabase;
 
-	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv, boolean printJobGraph) {
+	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv, boolean printJobGraph, String externalDatabase) {
 		this.name = name;
 		this.sqlQuery = sqlQuery;
 		this.numIters = numIters;
 		Preconditions.checkArgument(numIters > 0);
 		this.tEnv = tEnv;
 		this.printJobGraph = printJobGraph;
+		this.externalDatabase = externalDatabase;
 	}
 
 	void run(List<Tuple2<String, Long>> bestArray) {
@@ -77,6 +82,25 @@ class Runner {
 
 		LOG.info(" begin execute.");
 
+		if (externalDatabase != null) {
+			tEnv.useDatabase(externalDatabase);
+			// create sink table
+			TableDescriptor tableDescriptor =
+					TableDescriptor.forConnector("paimon")
+							.schema(Schema.newBuilder().fromResolvedSchema(table.getResolvedSchema()).build())
+							.build();
+			changeOptionsToModifiable(tableDescriptor);
+			String tableName = name.split("\\.")[0] + "_result";
+			tEnv.createTable(tableName, tableDescriptor);
+			TableResult tableResult = table.executeInsert(tableName);
+			// wait job finish
+			tableResult.getJobClient().get().getJobExecutionResult().get();
+			System.out.println("[INFO]Run TPC-DS query " + name + " success.");
+            long totalTime = System.currentTimeMillis() - startTime;
+            System.out.println("total execute " + totalTime + "ms.");
+            return new Result(totalTime);
+        }
+
 		List<Row> res = null;
 		if (printJobGraph) {
 			table.execute();
@@ -96,6 +120,15 @@ class Runner {
 		}
 
 		return new Result(totalTime);
+	}
+
+
+	/** This is for avoid "UnsupportedOperation" */
+	public static void changeOptionsToModifiable(TableDescriptor tableDescriptor)
+			throws Exception {
+		Field optionsField = tableDescriptor.getClass().getDeclaredField("options");
+		optionsField.setAccessible(true);
+		optionsField.set(tableDescriptor, new HashMap<>(tableDescriptor.getOptions()));
 	}
 
 	private void printResults(List<Result> results, List<Tuple2<String, Long>> bestArray) {

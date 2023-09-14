@@ -84,6 +84,7 @@ public class QueryUtilTest {
 		System.out.println(location);
 		System.out.println(queries);
 
+		System.out.println("q100.sql".split("\\.")[0]);
 	}
 
 	private String prepareOutFile() throws IOException {

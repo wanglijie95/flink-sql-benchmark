@@ -23,7 +23,7 @@ public class HiveBenchmark {
                 setUpEnv(
                         requireNonNull(line.getOptionValue(HIVE_CONF.getOpt())),
                         requireNonNull(line.getOptionValue(DATABASE.getOpt())));
-        Benchmark.runQueries(tEnv, line);
+        Benchmark.runQueries(tEnv, line, null);
     }
 
     private static TableEnvironment setUpEnv(String hiveConf, String database) {

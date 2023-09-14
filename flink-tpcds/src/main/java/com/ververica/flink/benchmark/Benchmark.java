@@ -68,26 +68,31 @@ public class Benchmark {
 
 	private Benchmark() {}
 
-	public static void runQueries(TableEnvironment tEnv, CommandLine line) throws ParseException {
+	public static void runQueries(TableEnvironment tEnv, CommandLine line, String externalDatabase) throws ParseException {
         String mode = line.getOptionValue(MODE.getOpt(), "execute");
         LinkedHashMap<String, String> queries =
                 getQueries(
                         line.getOptionValue(LOCATION.getOpt()),
                         line.getOptionValue(QUERIES.getOpt()));
 
+		if (externalDatabase != null) {
+			tEnv.executeSql("CREATE DATABASE " + externalDatabase);
+		}
+		System.out.println("After create database " + externalDatabase);
+
 		if ("explain".equals(mode)) {
 			explain(tEnv, queries);
 		} else {
-			run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")), mode.equals("print-job-graph"));
+			run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")), mode.equals("print-job-graph"), externalDatabase);
 		}
 	}
 
-	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations, boolean printJobGraph) {
+	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations, boolean printJobGraph, String externalDatabase) {
 		List<Tuple2<String, Long>> bestArray = new ArrayList<>();
 		queries.forEach((name, sql) -> {
 			tEnv.getConfig().getConfiguration().set(PipelineOptions.NAME, name);
 			System.out.println("Start run query: " + name);
-			Runner runner = new Runner(name, sql, iterations, tEnv, printJobGraph);
+			Runner runner = new Runner(name, sql, iterations, tEnv, printJobGraph, externalDatabase);
 			runner.run(bestArray);
 		});
 		printSummary(bestArray);
