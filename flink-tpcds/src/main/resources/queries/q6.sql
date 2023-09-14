@@ -21,6 +21,6 @@ select  a.ca_state state, count(*) cnt
  group by a.ca_state
  having count(*) >= 10
  order by cnt 
-
+ limit 100
 
 -- end query 1 in stream 0 using template query6.tpl

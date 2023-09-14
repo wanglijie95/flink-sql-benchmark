@@ -54,6 +54,6 @@ select
           cd_dep_count,
           cd_dep_employed_count,
           cd_dep_college_count
-
+limit 100
 
 -- end query 1 in stream 0 using template query10.tpl

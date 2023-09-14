@@ -73,6 +73,6 @@ where i_category in ('Children'))
  group by i_item_id
  order by i_item_id
       ,total_sales
-
+ limit 100
 
 -- end query 1 in stream 0 using template query60.tpl

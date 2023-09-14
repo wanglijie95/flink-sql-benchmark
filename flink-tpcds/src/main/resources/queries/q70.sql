@@ -33,6 +33,6 @@ select
    lochierarchy desc
   ,case when lochierarchy = 0 then s_state end
   ,rank_within_parent
-
+ limit 100
 
 -- end query 1 in stream 0 using template query70.tpl

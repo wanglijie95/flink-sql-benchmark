@@ -104,5 +104,6 @@ union all
    and case when t_c_firstyear.year_total > 0 then t_c_secyear.year_total / t_c_firstyear.year_total else null end
            > case when t_w_firstyear.year_total > 0 then t_w_secyear.year_total / t_w_firstyear.year_total else null end
  order by t_s_secyear.customer_preferred_cust_flag
+limit 100
 
 -- end query 1 in stream 0 using template query4.tpl

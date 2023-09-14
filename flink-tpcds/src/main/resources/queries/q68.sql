@@ -37,6 +37,6 @@ select  c_last_name
    and current_addr.ca_city <> bought_city
  order by c_last_name
          ,ss_ticket_number
-
+ limit 100
 
 -- end query 1 in stream 0 using template query68.tpl

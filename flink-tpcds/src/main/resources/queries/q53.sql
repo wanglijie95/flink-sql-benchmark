@@ -23,6 +23,6 @@ where case when avg_quarterly_sales > 0
 order by avg_quarterly_sales,
 	 sum_sales,
 	 i_manufact_id
-
+limit 100
 
 -- end query 1 in stream 0 using template query53.tpl
