@@ -7,22 +7,15 @@ import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.catalog.hive.HiveCatalog;
 import org.apache.hive.common.util.HiveVersionInfo;
 
+import static com.ververica.flink.benchmark.Benchmark.*;
 import static java.util.Objects.requireNonNull;
 
 public class HiveBenchmark {
 
-    private static final Option HIVE_CONF = new Option("c", "hive_conf", true,
-            "conf of hive.");
-
-    private static final Option DATABASE = new Option("d", "database", true,
-            "database of hive.");
-
     public static void main(String[] args) throws ParseException {
         System.out.println("Running HiveBenchmark, args: " + String.join(" ", args));
 
-        Options options = new Options();
-        options.addOption(HIVE_CONF);
-        options.addOption(DATABASE);
+        Options options = getOptions();
         DefaultParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args, true);
 
@@ -30,7 +23,7 @@ public class HiveBenchmark {
                 setUpEnv(
                         requireNonNull(line.getOptionValue(HIVE_CONF.getOpt())),
                         requireNonNull(line.getOptionValue(DATABASE.getOpt())));
-        Benchmark.runQueries(tEnv, args);
+        Benchmark.runQueries(tEnv, line);
     }
 
     private static TableEnvironment setUpEnv(String hiveConf, String database) {
@@ -39,7 +32,8 @@ public class HiveBenchmark {
 
         tEnv.getConfig().addConfiguration(GlobalConfiguration.loadConfiguration());
 
-        HiveCatalog catalog = new HiveCatalog("hive", database, hiveConf, HiveVersionInfo.getVersion());
+        HiveCatalog catalog =
+                new HiveCatalog("hive", database, hiveConf, HiveVersionInfo.getVersion());
         tEnv.registerCatalog("hive", catalog);
         tEnv.useCatalog("hive");
         return tEnv;

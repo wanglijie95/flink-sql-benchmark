@@ -17,6 +17,10 @@
 
 package com.ververica.flink.benchmark;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -28,6 +32,7 @@ import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.ververica.flink.benchmark.Benchmark.*;
 import static com.ververica.flink.benchmark.QueryUtil.getQueries;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -65,6 +70,20 @@ public class QueryUtilTest {
 		String dir = prepareOutFile();
 		LinkedHashMap<String, String> queries = getQueries(dir, "q1.sql,q14b.sql,q95.sql");
 		assertQueries(queries, 3);
+	}
+
+	@Test
+	public void testParseOptions() throws ParseException {
+		Options options = getOptions();
+		DefaultParser parser = new DefaultParser();
+		CommandLine line = parser.parse(options, new String[] {"--paimon_warehouse", "hdfs://master-1-1.c-f260d4b8d218a0fa.cn-beijing.emr.aliyuncs.com:9000/paimon-tpcds-partitioned",  "--paimon_database", "default",  "--queries", "q4.sql"}, false);
+		String mode = line.getOptionValue(MODE.getOpt(), "execute");
+		String location = line.getOptionValue(LOCATION.getOpt());
+		String queries = line.getOptionValue(QUERIES.getOpt());
+		System.out.println(mode);
+		System.out.println(location);
+		System.out.println(queries);
+
 	}
 
 	private String prepareOutFile() throws IOException {

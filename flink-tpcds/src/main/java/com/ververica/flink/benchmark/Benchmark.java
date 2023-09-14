@@ -35,27 +35,38 @@ import static com.ververica.flink.benchmark.QueryUtil.getQueries;
 
 public class Benchmark {
 
-	private static final Option LOCATION = new Option("l", "location", true,
+	// common conf
+	public static final Option LOCATION = new Option("l", "location", true,
 			"sql query path.");
 
-	private static final Option QUERIES = new Option("q", "queries", true,
+    public static final Option QUERIES = new Option("q", "queries", true,
 			"sql query names. If the value is 'all', all queries will be executed.");
 
-	private static final Option ITERATIONS = new Option("i", "iterations", true,
+    public static final Option ITERATIONS = new Option("i", "iterations", true,
 			"The number of iterations that will be run per case, default is 1.");
 
-	private static final Option PARALLELISM = new Option("p", "parallelism", true,
+    public static final Option PARALLELISM = new Option("p", "parallelism", true,
 			"The parallelism, default is 800.");
 
-	private static final Option MODE =
+    public static final Option MODE =
 			new Option("m", "mode", true, "mode: 'execute' or 'explain' or 'print-job-graph'");
+
+	// hive conf
+	public static final Option HIVE_CONF = new Option("c", "hive_conf", true,
+			"conf of hive.");
+	public static final Option DATABASE = new Option("d", "database", true,
+			"database of hive.");
+
+	// paimon conf
+	public static final Option PAIMON_WAREHOUSE =
+			new Option("pw", "paimon_warehouse", true, "warehouse of paimon.");
+	public static final Option PAIMON_DATABASE =
+			new Option("pd", "paimon_database", true, "database of paimon.");
+
 
 	private Benchmark() {}
 
-	public static void runQueries(TableEnvironment tEnv, String[] args) throws ParseException {
-		Options options = getOptions();
-		DefaultParser parser = new DefaultParser();
-		CommandLine line = parser.parse(options, args, true);
+	public static void runQueries(TableEnvironment tEnv, CommandLine line) throws ParseException {
         String mode = line.getOptionValue(MODE.getOpt(), "execute");
         LinkedHashMap<String, String> queries =
                 getQueries(
@@ -141,13 +152,19 @@ public class Benchmark {
 		System.err.println(builder.toString());
 	}
 
-	private static Options getOptions() {
+	public static Options getOptions() {
 		Options options = new Options();
 		options.addOption(LOCATION);
 		options.addOption(QUERIES);
 		options.addOption(ITERATIONS);
 		options.addOption(PARALLELISM);
         options.addOption(MODE);
+
+		options.addOption(HIVE_CONF);
+		options.addOption(DATABASE);
+
+		options.addOption(PAIMON_WAREHOUSE);
+		options.addOption(PAIMON_DATABASE);
 		return options;
 	}
 }

@@ -22,21 +22,15 @@ import org.apache.flink.configuration.GlobalConfiguration;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableEnvironment;
 
+import static com.ververica.flink.benchmark.Benchmark.*;
 import static java.util.Objects.requireNonNull;
 
 public class PaimonBenchmark {
 
-    private static final Option PAIMON_WAREHOUSE =
-            new Option("pw", "paimon_warehouse", true, "warehouse of paimon.");
-    private static final Option PAIMON_DATABASE =
-            new Option("pd", "paimon_database", true, "database of paimon.");
-
     public static void main(String[] args) throws ParseException {
         System.out.println("Running PaimonBenchmark, args: " + String.join(" ", args));
 
-        Options options = new Options();
-        options.addOption(PAIMON_WAREHOUSE);
-        options.addOption(PAIMON_DATABASE);
+        Options options = getOptions();
         DefaultParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args, true);
 
@@ -44,7 +38,7 @@ public class PaimonBenchmark {
                 setUpEnv(
                         requireNonNull(line.getOptionValue(PAIMON_WAREHOUSE.getOpt())),
                         requireNonNull(line.getOptionValue(PAIMON_DATABASE.getOpt())));
-        Benchmark.runQueries(tEnv, args);
+        Benchmark.runQueries(tEnv, line);
     }
 
     private static TableEnvironment setUpEnv(String paimonWarehouse, String paimonDatabase) {
