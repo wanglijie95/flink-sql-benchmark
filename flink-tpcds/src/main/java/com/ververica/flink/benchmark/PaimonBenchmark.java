@@ -99,9 +99,10 @@ public class PaimonBenchmark {
         if (paimonScanParallelism != null) {
             for (String table : ALL_TABLES) {
                 CatalogTable catalogTable =
-                        (CatalogTable) catalog.getTable(new ObjectPath(paimonDatabase, table));
+                        (CatalogTable) catalog.getTable(new ObjectPath(paimonDatabase, table)).copy();
                 catalogTable.getOptions().put("scan.infer-parallelism", "false");
                 catalogTable.getOptions().put("scan.parallelism", paimonScanParallelism);
+                catalog.alterTable(new ObjectPath(paimonDatabase, table), catalogTable, false);
             }
         }
         return tEnv;
