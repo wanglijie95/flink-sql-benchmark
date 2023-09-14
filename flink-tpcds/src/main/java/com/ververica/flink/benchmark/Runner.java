@@ -78,6 +78,7 @@ class Runner {
 		long startTime = System.currentTimeMillis();
 		LOG.info(" begin optimize.");
 
+		tEnv.useDatabase("default");
 		Table table = tEnv.sqlQuery(sqlQuery);
 
 		LOG.info(" begin execute.");
