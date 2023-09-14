@@ -62,6 +62,8 @@ public class Benchmark {
 			new Option("pw", "paimon_warehouse", true, "warehouse of paimon.");
 	public static final Option PAIMON_DATABASE =
 			new Option("pd", "paimon_database", true, "database of paimon.");
+	public static final Option PAIMON_SCAN_PARALLELISM =
+			new Option("pcp", "paimon_scan_parallelism", true, "scan parallelism of paimon.");
 
 
 	private Benchmark() {}
@@ -165,6 +167,7 @@ public class Benchmark {
 
 		options.addOption(PAIMON_WAREHOUSE);
 		options.addOption(PAIMON_DATABASE);
+		options.addOption(PAIMON_SCAN_PARALLELISM);
 		return options;
 	}
 }

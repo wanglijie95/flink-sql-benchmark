@@ -21,13 +21,47 @@ import org.apache.commons.cli.*;
 import org.apache.flink.configuration.GlobalConfiguration;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.catalog.Catalog;
+import org.apache.flink.table.catalog.CatalogTable;
+import org.apache.flink.table.catalog.ObjectPath;
+import org.apache.flink.table.catalog.exceptions.TableNotExistException;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.ververica.flink.benchmark.Benchmark.*;
 import static java.util.Objects.requireNonNull;
 
 public class PaimonBenchmark {
 
-    public static void main(String[] args) throws ParseException {
+    private static final List<String> ALL_TABLES =
+            Arrays.asList(
+                    "call_center",
+                    "catalog_page",
+                    "catalog_returns",
+                    "catalog_sales",
+                    "customer",
+                    "customer_address",
+                    "customer_demographics",
+                    "date_dim",
+                    "household_demographics",
+                    "income_band",
+                    "inventory",
+                    "item",
+                    "promotion",
+                    "reason",
+                    "ship_mode",
+                    "store",
+                    "store_returns",
+                    "store_sales",
+                    "time_dim",
+                    "warehouse",
+                    "web_page",
+                    "web_returns",
+                    "web_sales",
+                    "web_site");
+
+    public static void main(String[] args) throws ParseException, TableNotExistException {
         System.out.println("Running PaimonBenchmark, args: " + String.join(" ", args));
 
         Options options = getOptions();
@@ -37,11 +71,14 @@ public class PaimonBenchmark {
         TableEnvironment tEnv =
                 setUpEnv(
                         requireNonNull(line.getOptionValue(PAIMON_WAREHOUSE.getOpt())),
-                        requireNonNull(line.getOptionValue(PAIMON_DATABASE.getOpt())));
+                        requireNonNull(line.getOptionValue(PAIMON_DATABASE.getOpt())),
+                        line.getOptionValue(PAIMON_SCAN_PARALLELISM.getOpt()));
         Benchmark.runQueries(tEnv, line);
     }
 
-    private static TableEnvironment setUpEnv(String paimonWarehouse, String paimonDatabase) {
+    private static TableEnvironment setUpEnv(
+            String paimonWarehouse, String paimonDatabase, String paimonScanParallelism)
+            throws TableNotExistException {
         EnvironmentSettings settings = EnvironmentSettings.newInstance().inBatchMode().build();
         TableEnvironment tEnv = TableEnvironment.create(settings);
 
@@ -56,6 +93,16 @@ public class PaimonBenchmark {
                                 + "  'default-database' = '%s')",
                         paimonWarehouse, paimonDatabase));
         tEnv.executeSql("USE CATALOG paimon");
+
+        Catalog catalog = tEnv.getCatalog("paimon").get();
+        if (paimonScanParallelism != null) {
+            for (String table : ALL_TABLES) {
+                CatalogTable catalogTable =
+                        (CatalogTable) catalog.getTable(new ObjectPath(paimonDatabase, table));
+                catalogTable.getOptions().put("scan.infer-parallelism", "false");
+                catalogTable.getOptions().put("scan.parallelism", paimonScanParallelism);
+            }
+        }
         return tEnv;
     }
 }
