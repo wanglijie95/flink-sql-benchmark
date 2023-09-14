@@ -44,8 +44,9 @@ class Runner {
 	private final TableEnvironment tEnv;
 	private final boolean printJobGraph;
 	private final String externalDatabase;
+	private final String sinkParallelism;
 
-	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv, boolean printJobGraph, String externalDatabase) {
+	Runner(String name, String sqlQuery, int numIters, TableEnvironment tEnv, boolean printJobGraph, String externalDatabase, String sinkParallelism) {
 		this.name = name;
 		this.sqlQuery = sqlQuery;
 		this.numIters = numIters;
@@ -53,6 +54,7 @@ class Runner {
 		this.tEnv = tEnv;
 		this.printJobGraph = printJobGraph;
 		this.externalDatabase = externalDatabase;
+		this.sinkParallelism = sinkParallelism;
 	}
 
 	void run(List<Tuple2<String, Long>> bestArray) {
@@ -90,7 +92,7 @@ class Runner {
 					TableDescriptor.forConnector("paimon")
 							.schema(Schema.newBuilder().fromResolvedSchema(table.getResolvedSchema()).build())
 							.build();
-			changeOptionsToModifiable(tableDescriptor);
+			changeOptionsToModifiable(tableDescriptor, sinkParallelism);
 			String tableName = name.split("\\.")[0] + "_result";
 			tEnv.createTable(tableName, tableDescriptor);
 			TableResult tableResult = table.executeInsert(tableName);
@@ -125,11 +127,15 @@ class Runner {
 
 
 	/** This is for avoid "UnsupportedOperation" */
-	public static void changeOptionsToModifiable(TableDescriptor tableDescriptor)
+	public static void changeOptionsToModifiable(TableDescriptor tableDescriptor, String sinkParallelism)
 			throws Exception {
 		Field optionsField = tableDescriptor.getClass().getDeclaredField("options");
 		optionsField.setAccessible(true);
 		optionsField.set(tableDescriptor, new HashMap<>(tableDescriptor.getOptions()));
+		if (sinkParallelism != null) {
+			tableDescriptor.getOptions().put("bucket", sinkParallelism);
+			tableDescriptor.getOptions().put("sink.parallelism", sinkParallelism);
+		}
 	}
 
 	private void printResults(List<Result> results, List<Tuple2<String, Long>> bestArray) {

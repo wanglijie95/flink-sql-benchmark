@@ -64,6 +64,8 @@ public class Benchmark {
 			new Option("pd", "paimon_database", true, "database of paimon.");
 	public static final Option PAIMON_SCAN_PARALLELISM =
 			new Option("pcp", "paimon_scan_parallelism", true, "scan parallelism of paimon.");
+	public static final Option PAIMON_SINK_PARALLELISM =
+			new Option("pkp", "paimon_sink_parallelism", true, "scan parallelism of paimon.");
 
 
 	private Benchmark() {}
@@ -83,16 +85,16 @@ public class Benchmark {
 		if ("explain".equals(mode)) {
 			explain(tEnv, queries);
 		} else {
-			run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")), mode.equals("print-job-graph"), externalDatabase);
+			run(tEnv, queries, Integer.parseInt(line.getOptionValue(ITERATIONS.getOpt(), "1")), mode.equals("print-job-graph"), externalDatabase, line.getOptionValue(PAIMON_SINK_PARALLELISM.getOpt()));
 		}
 	}
 
-	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations, boolean printJobGraph, String externalDatabase) {
+	private static void run(TableEnvironment tEnv, LinkedHashMap<String, String> queries, int iterations, boolean printJobGraph, String externalDatabase, String sinkParallelism) {
 		List<Tuple2<String, Long>> bestArray = new ArrayList<>();
 		queries.forEach((name, sql) -> {
 			tEnv.getConfig().getConfiguration().set(PipelineOptions.NAME, name);
 			System.out.println("Start run query: " + name);
-			Runner runner = new Runner(name, sql, iterations, tEnv, printJobGraph, externalDatabase);
+			Runner runner = new Runner(name, sql, iterations, tEnv, printJobGraph, externalDatabase, sinkParallelism);
 			runner.run(bestArray);
 		});
 		printSummary(bestArray);
@@ -173,6 +175,7 @@ public class Benchmark {
 		options.addOption(PAIMON_WAREHOUSE);
 		options.addOption(PAIMON_DATABASE);
 		options.addOption(PAIMON_SCAN_PARALLELISM);
+		options.addOption(PAIMON_SINK_PARALLELISM);
 		return options;
 	}
 }
