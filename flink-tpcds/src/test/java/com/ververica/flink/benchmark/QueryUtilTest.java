@@ -22,14 +22,21 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.util.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -87,6 +94,15 @@ public class QueryUtilTest {
 		System.out.println(queries);
 
 		System.out.println("q100.sql".split("\\.")[0]);
+	}
+
+	@Test
+	public void test666() {
+		LoggerConfig loggerConfig = ((LoggerContext) LogManager.getContext()).getConfiguration().getRootLogger();
+		Map<String, Appender> appenders = loggerConfig.getAppenders();
+		for (Appender appender : appenders.values()) {
+			System.out.println(appender.getClass());
+		}
 	}
 
 	private String prepareOutFile() throws IOException {

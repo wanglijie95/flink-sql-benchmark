@@ -73,7 +73,7 @@ public class PaimonBenchmark {
                         requireNonNull(line.getOptionValue(PAIMON_WAREHOUSE.getOpt())),
                         requireNonNull(line.getOptionValue(PAIMON_DATABASE.getOpt())),
                         line.getOptionValue(PAIMON_SCAN_PARALLELISM.getOpt()));
-        Benchmark.runQueries(tEnv, line, "query_result");
+        Benchmark.runQueries(tEnv, line, "query_result_with_limit");
     }
 
     private static TableEnvironment setUpEnv(
