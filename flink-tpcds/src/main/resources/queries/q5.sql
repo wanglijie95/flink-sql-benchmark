@@ -123,6 +123,6 @@ with ssr as
  group by rollup (channel, id)
  order by channel
          ,id
-
+ limit 100
 
 -- end query 1 in stream 0 using template query5.tpl

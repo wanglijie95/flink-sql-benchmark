@@ -47,4 +47,4 @@ from
          and ws_sold_date_sk = d_date_sk
          and ws_item_sk in (select item_sk from frequent_ss_items)
          and ws_bill_customer_sk in (select c_customer_sk from best_ss_customer))) y
-
+ limit 100

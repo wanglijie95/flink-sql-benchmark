@@ -60,6 +60,6 @@ with ss_items as
    and ws_item_rev between 0.9 * cs_item_rev and 1.1 * cs_item_rev
  order by item_id
          ,ss_item_rev
-
+ limit 100
 
 -- end query 1 in stream 0 using template query58.tpl

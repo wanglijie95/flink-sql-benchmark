@@ -24,6 +24,6 @@ where case when avg_monthly_sales > 0 then abs (sum_sales - avg_monthly_sales) /
 order by i_manager_id
         ,avg_monthly_sales
         ,sum_sales
-
+limit 100
 
 -- end query 1 in stream 0 using template query63.tpl

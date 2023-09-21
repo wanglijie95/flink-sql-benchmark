@@ -29,6 +29,6 @@ order by
         ,i_item_id
         ,i_item_desc
         ,revenueratio
-
+limit 100
 
 -- end query 1 in stream 0 using template query12.tpl

@@ -27,6 +27,6 @@ and ws1.ws_order_number in (select wr_order_number
                             from web_returns,ws_wh
                             where wr_order_number = ws_wh.ws_order_number)
 order by count(distinct ws_order_number)
-
+limit 100
 
 -- end query 1 in stream 0 using template query95.tpl

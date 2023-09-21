@@ -39,6 +39,6 @@ order by i_category
         ,s_store_id
         ,sumsales
         ,rk
-
+limit 100
 
 -- end query 1 in stream 0 using template query67.tpl

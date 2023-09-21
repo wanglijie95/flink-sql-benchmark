@@ -40,6 +40,6 @@ from (select item_sk
 where web_cumulative > store_cumulative
 order by item_sk
         ,d_date
-
+limit 100
 
 -- end query 1 in stream 0 using template query51.tpl

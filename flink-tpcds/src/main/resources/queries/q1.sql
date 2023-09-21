@@ -20,5 +20,6 @@ and s_store_sk = ctr1.ctr_store_sk
 and s_state = 'NM'
 and ctr1.ctr_customer_sk = c_customer_sk
 order by c_customer_id
+limit 100
 
 -- end query 1 in stream 0 using template query1.tpl

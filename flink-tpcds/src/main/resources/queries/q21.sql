@@ -25,6 +25,6 @@ select  *
              end) between 2.0/3.0 and 3.0/2.0
  order by w_warehouse_name
          ,i_item_id
-
+ limit 100
 
 -- end query 1 in stream 0 using template query21.tpl
